@@ -64,7 +64,7 @@ class ChainableArray implements \ArrayAccess, \IteratorAggregate, \JsonSerializa
      * @see self::getData()
      * @return array
      */
-    public function __toArray()
+    public function toArray()
     {
         return $this->data;
     }

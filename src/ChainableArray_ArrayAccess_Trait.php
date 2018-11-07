@@ -108,9 +108,23 @@ trait ChainableArray_ArrayAccess_Trait
      * @param  mixed
      * @return $this
      */
-    public function setDefaultRow($row_or_generator)
+    public function setDefaultRow($row)
     {
-        $this->defaultRowGenerator = $row_or_generator;
+        unset($this->defaultRowGenerator);
+        $this->defaultRow = $row;
+        return $this;
+    }
+
+    /**
+     * Defines a default row or a callback to generate it.
+     *
+     * @param  mixed
+     * @return $this
+     */
+    public function setDefaultRowGenerator(callable $row_generator)
+    {
+        unset($this->defaultRow);
+        $this->defaultRowGenerator = $row_generator;
         return $this;
     }
 
@@ -121,6 +135,7 @@ trait ChainableArray_ArrayAccess_Trait
      */
     public function unsetDefaultRow()
     {
+        unset($this->defaultRow);
         unset($this->defaultRowGenerator);
         return $this;
     }
@@ -130,9 +145,10 @@ trait ChainableArray_ArrayAccess_Trait
      *
      * @return bool
      */
-    protected function hasDefaultRowValue()
+    public function hasDefaultRowValue()
     {
-        return property_exists($this, 'defaultRowGenerator');
+        return property_exists($this, 'defaultRow') 
+            || property_exists($this, 'defaultRowGenerator');
     }
 
     /**
@@ -142,12 +158,10 @@ trait ChainableArray_ArrayAccess_Trait
      */
     protected function generateDefaultRow($offset)
     {
-        if (is_callable($offset)) {
-            return call_user_func([$this, 'defaultRowGenerator'], $offset);
-        }
-        else {
-            return $this->defaultRowGenerator;
-        }
+        if (property_exists($this, 'defaultRow'))
+            return $this->defaultRow;
+        elseif (property_exists($this, 'defaultRowGenerator'))
+            return call_user_func($this->defaultRowGenerator, $offset);
     }
 
     /**/

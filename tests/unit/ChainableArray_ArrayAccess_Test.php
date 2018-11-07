@@ -50,5 +50,36 @@ class ChainableArray_ArrayAccess_Test extends \PHPUnit_Framework_TestCase
         }
     }
 
+    /**
+     */
+    public function test_access_unset_entries_with_default()
+    {
+        $array = ChainableArray::from([
+            'lalala',
+            'plop',
+        ]);
+        $this->assertFalse( $array->hasDefaultRowValue() );
+            
+        // scalar defaulkt row
+        $array->setDefaultRow('lilili');
+            
+        $this->assertEquals('lalala', $array[0]);
+        $this->assertEquals('lilili', $array[2]);
+        $this->assertEquals('lilili', $array['dfghjkl']);
+        
+        $this->assertTrue( $array->hasDefaultRowValue() );
+        
+        // default row generator
+        $array->setDefaultRowGenerator(function($key) {
+            return "'$key' is the best key ever";
+        });
+        
+        $this->assertEquals("':)' is the best key ever", $array[':)']);
+        
+        // removed default row
+        $array->unsetDefaultRow();
+        $this->assertFalse( $array->hasDefaultRowValue() );
+    }
+
     /**/
 }
