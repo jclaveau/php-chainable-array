@@ -1,8 +1,8 @@
 # WIP: php-chainable-array
 This is definitely not the best fluent implementation uppon PHP arrays but it's the
-one I did allaong the time.
+one I did along the time.
 
-I open it here to keep a trace of all the discussions and comparisons with others libs
+I open it here to keep a trace of all the discussions and comparisons with other libs
 i'd love to use instead.
 
 It's also opened to integrate it with CI tools.
