@@ -149,5 +149,30 @@ class ChainableArrayTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+    /**
+     */
+    public function test_throwUsageException()
+    {
+        try {
+            $array = ChainableArray::from([
+                'key_0' => 'zoubidou',
+                'key_1' => 'zoubidi',
+                'key_2' => 'zoubidi',
+            ])
+            ->mergeWith('azertyui')
+            ;
+        }
+        catch (\Exception $e) {
+            $this->assertEquals( __LINE__ - 4 , $e->getLine());
+            $this->assertEquals( __FILE__, $e->getFile());
+            
+            $this->assertEquals(
+                "\$otherTable must be an array or an instance of JClaveau\Arrays\ChainableArray instead of: 'azertyui'",
+                $e->getMessage()
+            );
+            
+        }
+    }
+
     /**/
 }

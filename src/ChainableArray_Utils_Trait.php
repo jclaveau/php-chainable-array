@@ -291,7 +291,7 @@ trait ChainableArray_Utils_Trait
 
         if (!$otherTable instanceof static) {
             self::throwUsageException(
-                '$otherTable must be an array or an instance of static instead of: '
+                '$otherTable must be an array or an instance of '.static::class.' instead of: '
                 .var_export($otherTable, true)
             );
         }
