@@ -174,7 +174,7 @@ trait ChainableArray_Utils_Trait
         array $existing_row,
         array $conflict_row
     ){
-        return Helper_Table::mergeRecursiveCustom(
+        return static::mergeRecursiveCustom(
             $existing_row,
             $conflict_row,
             function ($existing_value, $conflict_value, $column) {
@@ -279,19 +279,19 @@ trait ChainableArray_Utils_Trait
     /**
      * Merge a table into another one
      *
-     * @param Helper_Table $otherTable       The table to merge into
+     * @param static $otherTable       The table to merge into
      * @param callable     $conflictResolver Defines what to do if two
      *                                       rows have the same index.
-     * @return Helper_Table
+     * @return static
      */
     public function mergeWith( $otherTable, callable $conflictResolver=null )
     {
         if (is_array($otherTable))
-            $otherTable = new Helper_Table($otherTable);
+            $otherTable = new static($otherTable);
 
-        if (!$otherTable instanceof Helper_Table) {
+        if (!$otherTable instanceof static) {
             self::throwUsageException(
-                '$otherTable must be an array or an instance of Helper_Table instead of: '
+                '$otherTable must be an array or an instance of static instead of: '
                 .var_export($otherTable, true)
             );
         }
@@ -325,7 +325,7 @@ trait ChainableArray_Utils_Trait
     /**
      * Merge the table $otherTable into the current table.
      * (same as self::mergeWith with the other table as $this)
-     * @return Helper_Table
+     * @return static
      */
     public function mergeIn( $otherTable, callable $conflictResolver=null )
     {
@@ -379,7 +379,7 @@ trait ChainableArray_Utils_Trait
     /**
      * Rename a column on every row.
      *
-     * @return Helper_Table
+     * @return static
      */
     public function renameColumns(array $old_to_new_names)
     {
@@ -435,18 +435,18 @@ trait ChainableArray_Utils_Trait
     /**
      * Appends an array to the current one.
      *
-     * @param  array|Helper_Table $new_rows to append
+     * @param  array|static $new_rows to append
      * @param  callable           $conflict_resolver to use if a new row as the
      *                            same key as an existing row. By default, the new
      *                            key will be lost and the row appended as natively.
      *
      * @throws UsageException     If the $new_rows parameter is neither an array
-     *                            nor a Helper_Table.
-     * @return Helper_Table       $this
+     *                            nor a static.
+     * @return static       $this
      */
     public function append($new_rows, callable $conflict_resolver=null)
     {
-        if ($new_rows instanceof Helper_Table)
+        if ($new_rows instanceof static)
             $new_rows = $new_rows->getArray();
 
         if (!is_array($new_rows)) {
@@ -487,7 +487,7 @@ trait ChainableArray_Utils_Trait
      *
      * @see self::dimensionsAsColumns_recurser()
      *
-     * @return Helper_Table
+     * @return static
      */
     public function dimensionsAsColumns(array $columnNames, array $options=null)
     {
@@ -904,7 +904,7 @@ trait ChainableArray_Utils_Trait
      * @param  callable|array $callback The filter logic with $value and $key
      *                            as parameters.
      *
-     * @return Helper_Table $this or a new Helper_Table.
+     * @return static $this or a new static.
      */
     public function extract($callback=null)
     {
@@ -931,7 +931,7 @@ trait ChainableArray_Utils_Trait
             }
         }
 
-        return new Helper_Table($out);
+        return new static($out);
     }
 
     /**/

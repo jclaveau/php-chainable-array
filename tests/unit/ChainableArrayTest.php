@@ -120,5 +120,34 @@ class ChainableArrayTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+    /**
+     */
+    public function test_mergeWith()
+    {
+        $array = ChainableArray::from([
+            'key_0' => 'zoubidou',
+            'key_1' => 'zoubidi',
+            'key_2' => 'zoubidi',
+        ])
+        ->mergeWith( ChainableArray::from([
+            'key_5' => ':)',
+            'key_6' => ':(',
+            'key_7' => 'XD',
+        ]) )
+        ;
+        
+        $this->assertEquals(
+            [
+                'key_0' => 'zoubidou',
+                'key_1' => 'zoubidi',
+                'key_2' => 'zoubidi',
+                'key_5' => ':)',
+                'key_6' => ':(',
+                'key_7' => 'XD',
+            ],
+            $array->getArray()
+        );
+    }
+
     /**/
 }
