@@ -19,7 +19,7 @@ trait ChainableArray_NativeFunctions_Trait
      * @param $column_names         The columns to keep
      * @param $index_key (optional) The column to use as new index key.
      *                              The current key we be kept if null.
-     * @return Helper_Table|$this
+     * @return $this
      */
     public function columns($column_names, $index_key=null)
     {
@@ -46,7 +46,7 @@ trait ChainableArray_NativeFunctions_Trait
             else {
                 // This avoids issues with isset, array_key_exists and
                 // null entries on objects and arrays.
-                if ($row instanceof Helper_Table) {
+                if ($row instanceof static) {
                     $keys = $row->copy()->keys();
                 }
                 elseif (is_array($row)) {
@@ -162,7 +162,7 @@ trait ChainableArray_NativeFunctions_Trait
     /**
      * Equivalent of array_values.
      *
-     * @return Helper_Table|$this
+     * @return $this
      */
     public function values()
     {
@@ -177,7 +177,7 @@ trait ChainableArray_NativeFunctions_Trait
      * @param  callable|array $callback The filter logic with $value and $key
      *                            as parameters.
      *
-     * @return Helper_Table $this or a new Helper_Table.
+     * @return static $this or a new static.
      */
     public function filter($callback=null)
     {
@@ -222,7 +222,7 @@ trait ChainableArray_NativeFunctions_Trait
      * @see self::filter()
      * @deprecated
      *
-     * @return Helper_Table $this or a new Helper_Table.
+     * @return static $this or a new static.
      */
     public function filterKey(callable $callback=null)
     {
@@ -235,7 +235,7 @@ trait ChainableArray_NativeFunctions_Trait
      *
      * @param * $item_to_remove
      *
-     * @return Helper_Table $this or a new Helper_Table.
+     * @return static $this or a new static.
      */
     public function remove($item_to_remove)
     {
@@ -254,14 +254,14 @@ trait ChainableArray_NativeFunctions_Trait
     /**
      * Equivalent of array_intersect_key()
      *
-     * @return Helper_Table $this or a new Helper_Table.
+     * @return static $this or a new static.
      */
     public function intersectKey($intersect_with)
     {
         if (!$this->argumentIsArrayOrArrayObject($intersect_with))
-            self::throwUsageException("First argument must be an array or a Helper_Table.");
+            self::throwUsageException("First argument must be an array or a ".static::class.".");
 
-        if ($intersect_with instanceof Helper_Table)
+        if ($intersect_with instanceof static)
             $intersect_with = $intersect_with->getArray();
 
         $out = array_intersect_key($this->data, $intersect_with);
@@ -272,7 +272,7 @@ trait ChainableArray_NativeFunctions_Trait
     /**
      * Equivalent of array_flip()
      *
-     * @return Helper_Table $this or a new Helper_Table.
+     * @return static $this or a new static.
      */
     public function flip()
     {
@@ -293,12 +293,12 @@ trait ChainableArray_NativeFunctions_Trait
     /**
      * Equivalent of array_unshift()
      *
-     * @return Helper_Table $this.
+     * @return static $this.
      */
     public function unshift()
     {
         $data = $this->data;
-        $arguments = Arr::merge( [&$data], func_get_args() );
+        $arguments = Arrays::merge( [&$data], func_get_args() );
 
         call_user_func_array('array_unshift', $arguments);
         return $this->returnConstant($data);
@@ -307,12 +307,12 @@ trait ChainableArray_NativeFunctions_Trait
     /**
      * Equivalent of array_push()
      *
-     * @return Helper_Table $this or a new Helper_Table.
+     * @return static $this or a new static.
      */
     public function push()
     {
         $data = $this->data;
-        $arguments = Arr::merge( [&$data], func_get_args() );
+        $arguments = Arrays::merge( [&$data], func_get_args() );
 
         call_user_func_array('array_push', $arguments);
         return $this->returnConstant($data);
@@ -321,7 +321,7 @@ trait ChainableArray_NativeFunctions_Trait
     /**
      * Equivalent of array_unique()
      *
-     * @return Helper_Table $this or a new Helper_Table.
+     * @return static $this or a new static.
      */
     public function unique($flags=SORT_STRING)
     {
@@ -347,7 +347,7 @@ trait ChainableArray_NativeFunctions_Trait
      *
      * @see http://php.net/manual/en/function.array-diff.php
      *
-     * @return Helper_Table $this or a new Helper_Table.
+     * @return static $this or a new static.
      */
     public function diff($compare_with, $check_keys=false, $strict_comparison=false)
     {
@@ -417,14 +417,14 @@ trait ChainableArray_NativeFunctions_Trait
      *
      * @see    http://php.net/manual/en/function.array-fill-keys.php
      *
-     * @return Helper_Table The filled array.
+     * @return static The filled array.
      */
     public function fillKeys($keys, $value)
     {
         if (!$this->argumentIsArrayOrArrayObject($keys))
-            self::throwUsageException("First argument must be an array or a Helper_Table.");
+            self::throwUsageException("First argument must be an array or a ".static::class.".");
 
-        if ($keys instanceof Helper_Table)
+        if ($keys instanceof static)
             $keys = $keys->getArray();
 
         $out = array_fill_keys($keys, $value);
@@ -436,7 +436,7 @@ trait ChainableArray_NativeFunctions_Trait
      *
      * @see    http://php.net/manual/en/function.array-fill.php
      *
-     * @return Helper_Table The filled array.
+     * @return static The filled array.
      */
     public function fill($start, $number, $value, $interval=1)
     {
@@ -462,7 +462,7 @@ trait ChainableArray_NativeFunctions_Trait
      *
      * @see    http://php.net/manual/en/function.array-fill.php
      *
-     * @return Helper_Table The filled array.
+     * @return static The filled array.
      */
     public function fillWithSeries(
         $zero_key,
@@ -681,16 +681,16 @@ trait ChainableArray_NativeFunctions_Trait
     /**
      * Equivalent of array_intersect()
 
-     * @param Array|Helper_Table $intersect_with
-     * @return Helper_Table $this or a new Helper_Table.
+     * @param Array|static $intersect_with
+     * @return static $this or a new static.
      */
     public function intersect($intersect_with)
     {
         if (!$this->argumentIsArrayOrArrayObject($intersect_with)) {
-            $this->throwUsageException("First argument must be an array or a Helper_Table.");
+            $this->throwUsageException("First argument must be an array or a ".static::class.".");
         }
 
-        if ($intersect_with instanceof Helper_Table) {
+        if ($intersect_with instanceof static) {
             $intersect_with = $intersect_with->getArray();
         }
 

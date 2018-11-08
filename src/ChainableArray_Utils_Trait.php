@@ -812,7 +812,7 @@ trait ChainableArray_Utils_Trait
      */
     public function isAssoc()
     {
-        return Arr::is_assoc($this->getArray());
+        return Arrays::isAssoc($this->getArray());
     }
 
     /**
