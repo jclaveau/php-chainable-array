@@ -19,3 +19,4 @@ It's also opened to integrate it with CI tools.
 + https://github.com/jkoudys/immutable.php (high perf non associative array / extending issues)
 + https://github.com/radmen/ArrayChain (interesting automatic binding to native functions)
 + https://github.com/aaronds/php-collections
++ https://github.com/cocur/chain (interesting api && traits )

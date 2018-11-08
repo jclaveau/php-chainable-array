@@ -86,8 +86,35 @@ class ChainableArrayTest extends \PHPUnit_Framework_TestCase
         
         $this->assertEquals(
             [
+                'key_0' => 'zoubidou',
+                'key_1' => 'zoubidi',
+            ],
+            $array->getArray()
+        );
+    }
+
+    /**
+     */
+    public function test_usort()
+    {
+        $array = ChainableArray::from([
             'key_0' => 'zoubidou',
             'key_1' => 'zoubidi',
+            'key_2' => 'zoubidi',
+        ])
+        ->usort(function($a, $b) {
+            if ($a == $b)
+                return 0;
+
+            return $a < $b ? -1 : 1;
+        })
+        ;
+        
+        $this->assertEquals(
+            [
+                'key_1' => 'zoubidi',
+                'key_2' => 'zoubidi',
+                'key_0' => 'zoubidou',
             ],
             $array->getArray()
         );

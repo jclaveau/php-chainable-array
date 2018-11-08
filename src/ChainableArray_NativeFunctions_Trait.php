@@ -647,7 +647,7 @@ trait ChainableArray_NativeFunctions_Trait
             };
         }
 
-        $arguments = Arr::merge( [&$data], [$callback] );
+        $arguments = Arrays::merge( [&$data], [$callback] );
 
         if ( ! call_user_func_array('uasort', $arguments) )
             throw new \ErrorException('Unable to apply usort');
@@ -670,7 +670,7 @@ trait ChainableArray_NativeFunctions_Trait
             };
         }
 
-        $arguments = Arr::merge( [&$data], [$callback] );
+        $arguments = Arrays::merge( [&$data], [$callback] );
 
         if ( ! call_user_func_array('uksort', $arguments) )
             throw new \ErrorException('Unable to apply uksort');
