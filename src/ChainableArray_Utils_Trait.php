@@ -77,7 +77,7 @@ trait ChainableArray_Utils_Trait
             if (!$row)
                 continue;
 
-            $new_keys = call_user_func($indexGenerator, $key, $row);
+            $new_keys = call_user_func($indexGenerator, $row, $key);
             if (!is_array($new_keys))
                 $new_keys = [$new_keys];
 
