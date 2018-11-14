@@ -2,13 +2,13 @@
 namespace JClaveau\Arrays;
 
 /**
- * 
+ *
  */
 class Arrays
 {
     /**
      * Taken from Kohana's Arr class.
-     * 
+     *
      * Tests if an array is associative or not.
      *
      *     // Returns TRUE
@@ -32,7 +32,7 @@ class Arrays
 
     /**
      * Taken from Kohana's Arr class.
-     * 
+     *
      * Recursively merge two or more arrays. Values in an associative array
      * overwrite previous values with the same key. Values in an indexed array
      * are appended, but only when they do not already exist in the result.
@@ -117,6 +117,184 @@ class Arrays
         }
 
         return $array1;
+    }
+
+    /**
+     * Equivalent of array_merge_recursive with more options.
+     *
+     * @param array         $existing_row
+     * @param array         $conflict_row
+     * @param callable|null $merge_resolver
+     * @param int           $max_depth
+     *
+     * + If exist only in conflict row => add
+     * + If same continue
+     * + If different merge as array
+     */
+    public static function mergeRecursiveCustom(
+        array $existing_row,
+        array $conflict_row,
+        callable $merge_resolver=null,
+        $max_depth=null
+    ){
+        foreach ($conflict_row as $column => $conflict_value) {
+
+            // not existing in first array
+            if (!isset($existing_row[$column])) {
+                $existing_row[$column] = $conflict_value;
+                continue;
+            }
+
+            $existing_value = $existing_row[$column];
+
+            // two arrays so we recurse
+            if (is_array($existing_value) && is_array($conflict_value)) {
+
+                if ($max_depth === null || $max_depth > 0) {
+                    $existing_row[$column] = static::mergeRecursiveCustom(
+                        $existing_value,
+                        $conflict_value,
+                        $merge_resolver,
+                        $max_depth - 1
+                    );
+                    continue;
+                }
+            }
+
+            if ($merge_resolver) {
+                $existing_row[$column] = call_user_func_array(
+                    $merge_resolver,
+                    [
+                        $existing_value,
+                        $conflict_value,
+                        $column,
+                    ]
+                );
+            }
+            else {
+                // same resolution as array_merge_recursive
+                if (!is_array($existing_value)) {
+                    $existing_row[$column] = [$existing_value];
+                }
+
+                // We store the new value with their previous ones
+                $existing_row[$column][] = $conflict_value;
+            }
+        }
+
+        return $existing_row;
+    }
+
+    /**
+     * Merges two rows
+     *
+     * @param  array $existing_row
+     * @param  array $conflict_row
+     *
+     * @return array
+     */
+    public static function mergePreservingDistincts(
+        array $existing_row,
+        array $conflict_row
+    ){
+        $merge = static::mergeRecursiveCustom(
+            $existing_row,
+            $conflict_row,
+            function ($existing_value, $conflict_value, $column) {
+
+                if ( ! $existing_value instanceof MergeBucket) {
+                    $existing_value = MergeBucket::from()->push($existing_value);
+                }
+
+                // We store the new value with their previous ones
+                if ( ! $conflict_value instanceof MergeBucket) {
+                    $conflict_value = MergeBucket::from()->push($conflict_value);
+                }
+
+                foreach ($conflict_value->toArray() as $conflict_key => $conflict_entry) {
+                    $existing_value->push($conflict_entry);
+                }
+
+                return $existing_value;
+            },
+            0
+        );
+
+        return $merge;
+    }
+
+    /**
+     *
+     */
+    public static function cleanMergeBuckets($merged_row)
+    {
+        foreach ($merged_row as $entry => $values) {
+            if ($values instanceof MergeBucket) {
+                $out[ $entry ] = $values->toArray();
+            }
+        }
+
+        return $out;
+    }
+
+    /**
+     * This is the cleaning part of self::mergePreservingDistincts()
+     *
+     * @see mergePreservingDistincts()
+     */
+    public static function keepUniqueColumnValues(array $row, array $excluded_columns=[])
+    {
+        foreach ($row as $column => &$values) {
+            if (!is_array($values))
+                continue;
+
+            if (in_array($column, $excluded_columns))
+                continue;
+
+            $values = array_unique($values);
+            if (count($values) == 1)
+                $values = $values[0];
+        }
+
+        return $row;
+    }
+
+    /**
+     * Replacement of array_unique, keeping the first key.
+     *
+     * @param  $array
+     * @return With unique values
+     *
+     * @todo   Options to keep another key than the first one?
+     */
+    public static function unique($array)
+    {
+        if (! is_array($array) && ! $array instanceof \Traversable) {
+            throw \InvalidArgumentEXception(
+                "\$array must be an array or a \Traversable instead of: \n"
+                .var_export($array)
+            );
+        }
+
+        $ids = [];
+        foreach ($array as $key => $value) {
+            if (is_scalar($value)) {
+                $id = $value;
+            }
+            else {
+                $id = serialize($value);
+            }
+
+            if (isset($ids[ $id ])) {
+                unset($array[ $key ]);
+                $ids[ $id ][] = $key;
+                continue;
+            }
+
+            $ids[ $id ] = [$key];
+        }
+
+        return $array;
     }
 
     /**/

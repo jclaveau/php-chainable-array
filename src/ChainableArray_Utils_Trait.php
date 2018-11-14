@@ -97,16 +97,7 @@ trait ChainableArray_Utils_Trait
     }
 
     /**
-     * Equivalent of array_merge_recursive with more options.
-     *
-     * @param array         $existing_row
-     * @param array         $conflict_row
-     * @param callable|null $merge_resolver
-     * @param int           $max_depth
-     *
-     * + If exist only in conflict row => add
-     * + If same continue
-     * + If different merge as array
+     * @deprecated Arrays::mergeRecursiveCustom
      */
     public static function mergeRecursiveCustom(
         array $existing_row,
@@ -114,111 +105,30 @@ trait ChainableArray_Utils_Trait
         callable $merge_resolver=null,
         $max_depth=null
     ){
-        foreach ($conflict_row as $column => $conflict_value) {
-
-            // not existing in first array
-            if (!isset($existing_row[$column])) {
-                $existing_row[$column] = $conflict_value;
-                continue;
-            }
-
-            $existing_value = $existing_row[$column];
-
-            // two arrays so we recurse
-            if (is_array($existing_value) && is_array($conflict_value)) {
-
-                if ($max_depth === null || $max_depth > 0) {
-                    $existing_row[$column] = self::mergeRecursiveCustom(
-                        $existing_value,
-                        $conflict_value,
-                        $merge_resolver,
-                        $max_depth - 1
-                    );
-                    continue;
-                }
-            }
-
-            if ($merge_resolver) {
-                $existing_row[$column] = call_user_func_array(
-                    $merge_resolver,
-                    [
-                        $existing_value,
-                        $conflict_value,
-                        $column,
-                    ]
-                );
-            }
-            else {
-                // same reslution as array_merge_recursive
-                if (!is_array($existing_value)) {
-                    $existing_row[$column] = [$existing_value];
-                }
-
-                // We store the new value with their previous ones
-                $existing_row[$column][] = $conflict_value;
-            }
-        }
-
-        return $existing_row;
-    }
-
-    /**
-     * This specific merge
-     *
-     * @param  array $existing_row
-     * @param  array $conflict_row
-     *
-     * @return array
-     */
-    public static function mergePreservingDistincts(
-        array $existing_row,
-        array $conflict_row
-    ){
-        return static::mergeRecursiveCustom(
+        return Arrays::mergePreservingDistincts(
             $existing_row,
             $conflict_row,
-            function ($existing_value, $conflict_value, $column) {
-
-                if (!is_array($existing_value))
-                    $existing_value = [$existing_value];
-
-                // We store the new value with their previous ones
-                if ( ! is_array($conflict_value)) {
-                    $conflict_value = [
-                        $conflict_value
-                    ];
-                }
-
-                foreach ($conflict_value as $conflict_key => $conflict_entry) {
-                    $existing_value[] = $conflict_entry;
-                }
-
-                return $existing_value;
-            },
-            1
+            $merge_resolver,
+            $max_depth
         );
     }
 
     /**
-     * This is the cleaning part of self::mergePreservingDistincts()
-     *
-     * @see mergePreservingDistincts()
+     * @deprecated Arrays::mergePreservingDistincts()
+     */
+    public static function mergePreservingDistincts(
+        array $existing_row,
+        array $conflict_row
+    ) {
+        return Arrays::keepUniqueColumnValues($existing_row, $conflict_row);
+    }
+
+    /**
+     * @deprecated Arrays::mergePreservingDistincts()
      */
     public static function keepUniqueColumnValues(array $row, array $excluded_columns=[])
     {
-        foreach ($row as $column => &$values) {
-            if (!is_array($values))
-                continue;
-
-            if (in_array($column, $excluded_columns))
-                continue;
-
-            $values = array_unique($values);
-            if (count($values) == 1)
-                $values = $values[0];
-        }
-
-        return $row;
+        return Arrays::keepUniqueColumnValues($row, $excluded_columns);
     }
 
     /**
