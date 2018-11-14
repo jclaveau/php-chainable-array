@@ -89,14 +89,18 @@ trait ChainableArray_ArrayAccess_Trait
             $reflectionClass = new \ReflectionClass( get_class($e) );
 
             //file
-            $reflectionProperty = $reflectionClass->getProperty('file');
-            $reflectionProperty->setAccessible(true);
-            $reflectionProperty->setValue($e, $trace_location['file']);
+            if (isset($trace_location['file'])) {
+                $reflectionProperty = $reflectionClass->getProperty('file');
+                $reflectionProperty->setAccessible(true);
+                $reflectionProperty->setValue($e, $trace_location['file']);
+            }
 
             // line
-            $reflectionProperty = $reflectionClass->getProperty('line');
-            $reflectionProperty->setAccessible(true);
-            $reflectionProperty->setValue($e, $trace_location['line']);
+            if (isset($trace_location['line'])) {
+                $reflectionProperty = $reflectionClass->getProperty('line');
+                $reflectionProperty->setAccessible(true);
+                $reflectionProperty->setValue($e, $trace_location['line']);
+            }
 
             throw $e;
         }
@@ -147,7 +151,7 @@ trait ChainableArray_ArrayAccess_Trait
      */
     public function hasDefaultRowValue()
     {
-        return property_exists($this, 'defaultRow') 
+        return property_exists($this, 'defaultRow')
             || property_exists($this, 'defaultRowGenerator');
     }
 
