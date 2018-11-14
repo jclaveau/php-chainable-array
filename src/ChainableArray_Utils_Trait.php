@@ -863,19 +863,6 @@ trait ChainableArray_Utils_Trait
     }
 
     /**
-     * Equivalent of var_dump() but will echo the json_encode value of
-     * the native array.
-     *
-     * This method is useful with the output buffer redirect to a json
-     * stream like on Vuble's ajax apis.
-     */
-    public function dumpJson($exit=false)
-    {
-        Debug::dumpJson($this->data, $exit, 3);
-        return $this;
-    }
-
-    /**
      * Scans the array recursivelly (until the max depthis reached) and replaces
      * the entries with the callback;
      *
