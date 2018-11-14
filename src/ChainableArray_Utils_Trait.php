@@ -852,9 +852,10 @@ trait ChainableArray_Utils_Trait
         $bt = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
         $caller = $bt[0];
 
-        header('content-type: text/html');
-        var_dump($caller['file'] . ':' . $caller['line']);
-        var_dump($this->data);
+        var_export([
+            'location' => $caller['file'] . ':' . $caller['line'],
+            'data'     => $this->data,
+        ]);
 
         if ($exit)
             exit;
