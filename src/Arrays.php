@@ -230,11 +230,11 @@ class Arrays
     {
         foreach ($merged_row as $entry => $values) {
             if ($values instanceof MergeBucket) {
-                $out[ $entry ] = $values->toArray();
+                $merged_row[ $entry ] = $values->toArray();
             }
         }
 
-        return $out;
+        return $merged_row;
     }
 
     /**
@@ -262,17 +262,17 @@ class Arrays
     /**
      * Replacement of array_unique, keeping the first key.
      *
-     * @param  $array
-     * @return With unique values
+     * @param  array|\Traversable $array
+     * @return array|\Traversable With unique values
      *
      * @todo   Options to keep another key than the first one?
      */
     public static function unique($array)
     {
         if (! is_array($array) && ! $array instanceof \Traversable) {
-            throw \InvalidArgumentException(
+            throw new \InvalidArgumentException(
                 "\$array must be an array or a \Traversable instead of: \n"
-                .var_export($array)
+                .var_export($array, true)
             );
         }
 

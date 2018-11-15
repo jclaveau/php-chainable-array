@@ -105,7 +105,7 @@ trait ChainableArray_Utils_Trait
         callable $merge_resolver=null,
         $max_depth=null
     ){
-        return Arrays::mergePreservingDistincts(
+        return Arrays::mergeRecursiveCustom(
             $existing_row,
             $conflict_row,
             $merge_resolver,
@@ -120,7 +120,7 @@ trait ChainableArray_Utils_Trait
         array $existing_row,
         array $conflict_row
     ) {
-        return Arrays::keepUniqueColumnValues($existing_row, $conflict_row);
+        return Arrays::mergePreservingDistincts($existing_row, $conflict_row);
     }
 
     /**
