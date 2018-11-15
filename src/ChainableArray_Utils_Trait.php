@@ -748,7 +748,7 @@ trait ChainableArray_Utils_Trait
         $values  = array_column($this->data, $valueColumnName);
         $weights = array_column($this->data, $weightColumnName);
 
-        return Helper_Math::weightedMean($values, $weights);
+        return Arrays::weightedMean($values, $weights);
     }
 
     /**

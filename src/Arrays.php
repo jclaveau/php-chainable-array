@@ -270,7 +270,7 @@ class Arrays
     public static function unique($array)
     {
         if (! is_array($array) && ! $array instanceof \Traversable) {
-            throw \InvalidArgumentEXception(
+            throw \InvalidArgumentException(
                 "\$array must be an array or a \Traversable instead of: \n"
                 .var_export($array)
             );
@@ -295,6 +295,48 @@ class Arrays
         }
 
         return $array;
+    }
+
+    /**
+     * This method returns a classical mathemartic weighted mean.
+     *
+     * @todo It would ideally handled by a bridge with this fantastic math
+     * lib https://github.com/markrogoyski/math-php/ but we need the support
+     * of PHP 7 first.
+     *
+     * @see https://en.wikipedia.org/wiki/Weighted_arithmetic_mean
+     * @see https://github.com/markrogoyski/math-php/
+     */
+    public static function weightedMean($values, $weights)
+    {
+        if ( ! is_array($values))
+            $values = [$values];
+
+        if ( ! is_array($weights))
+            $weights = [$weights];
+
+        if (count($values) != count($weights)) {
+            throw new \InvalidArgumentException(
+                "Different number of "
+                ." values and weights for weight mean calculation: \n"
+                .var_export($values,  true)."\n\n"
+                .var_export($weights, true)
+            );
+        }
+
+        if (!$values)
+            return null;
+
+        $weights_sum  = array_sum($weights);
+        if (!$weights_sum)
+            return 0;
+
+        $weighted_sum = 0;
+        foreach ($values as $i => $value) {
+            $weighted_sum += $value * $weights[$i];
+        }
+
+        return $weighted_sum / $weights_sum;
     }
 
     /**/
