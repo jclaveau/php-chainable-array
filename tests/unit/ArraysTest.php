@@ -183,6 +183,9 @@ class ArraysTest extends \PHPUnit_Framework_TestCase
      */
     public function test_mustBeCountable()
     {
+        $this->assertTrue( Arrays::mustBeCountable([]) );
+        $this->assertTrue( Arrays::mustBeCountable( ChainableArray::from() ) );
+
         try {
             Arrays::mustBeCountable('lalala');
             $this->assertFalse(true, "An exception should have been thrown here");
@@ -196,6 +199,39 @@ class ArraysTest extends \PHPUnit_Framework_TestCase
                 $e->getMessage()
             );
         }
+    }
+
+    /**
+     */
+    public function test_mustBeTraversable()
+    {
+        $this->assertTrue( Arrays::mustBeTraversable([]) );
+        $this->assertTrue( Arrays::mustBeTraversable( ChainableArray::from() ) );
+
+        try {
+            Arrays::mustBeTraversable('lalala');
+            $this->assertFalse(true, "An exception should have been thrown here");
+        }
+        catch (\Exception $e) {
+            $this->assertEquals( __FILE__, $e->getFile());
+            $this->assertEquals( __LINE__ - 5, $e->getLine());
+
+            $this->assertEquals(
+                "A value must be Traversable instead of: \n'lalala'",
+                $e->getMessage()
+            );
+        }
+    }
+
+    /**
+     */
+    public function test_keyExists()
+    {
+        $this->assertTrue( Arrays::keyExists('lala', ['lala' => null]) );
+        $this->assertTrue( Arrays::keyExists('lala', ChainableArray::from(['lala' => null]) ) );
+
+        $this->assertFalse( Arrays::keyExists('lolo', ['lala' => null]) );
+        $this->assertFalse( Arrays::keyExists('lolo', ChainableArray::from(['lala' => null]) ) );
     }
 
     /**/

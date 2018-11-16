@@ -680,7 +680,7 @@ trait ChainableArray_NativeFunctions_Trait
 
     /**
      * Equivalent of array_intersect()
-
+     *
      * @param Array|static $intersect_with
      * @return static $this or a new static.
      */
@@ -696,4 +696,13 @@ trait ChainableArray_NativeFunctions_Trait
 
         return $this->returnConstant(array_intersect($this->data, $intersect_with));
     }
+
+    /**
+     */
+    public function keyExists($key)
+    {
+        return array_key_exists($key, $this->data);
+    }
+
+    /**/
 }

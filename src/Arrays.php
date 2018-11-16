@@ -322,6 +322,27 @@ class Arrays
     }
 
     /**
+     */
+    public static function keyExists($key, $array)
+    {
+        static::mustBeTraversable($array);
+
+        if (is_array($array)) {
+            return array_key_exists($key, $array);
+        }
+        elseif ($array instanceof ChainableArray || method_exists($array, 'keyExists')) {
+            return $array->keyExists($key);
+        }
+        else {
+            throw new \InvalidArgumentException(
+                "keyExists() method missing on :\n". var_export($array, true)
+            );
+        }
+
+        return $array;
+    }
+
+    /**
      * Replacement of array_sum wich throws exceptions instead of skipping
      * bad operands.
      *
@@ -437,6 +458,38 @@ class Arrays
         if ( ! static::isCountable($value) ) {
             $exception = new \InvalidArgumentException(
                 "A value must be Countable instead of: \n"
+                .var_export($value, true)
+            );
+
+            // The true location of the throw is still available through the backtrace
+            $trace_location  = debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0];
+            $reflectionClass = new \ReflectionClass( get_class($exception) );
+
+            // file
+            if (isset($trace_location['file'])) {
+                $reflectionProperty = $reflectionClass->getProperty('file');
+                $reflectionProperty->setAccessible(true);
+                $reflectionProperty->setValue($exception, $trace_location['file']);
+            }
+
+            // line
+            if (isset($trace_location['line'])) {
+                $reflectionProperty = $reflectionClass->getProperty('line');
+                $reflectionProperty->setAccessible(true);
+                $reflectionProperty->setValue($exception, $trace_location['line']);
+            }
+
+            throw $exception;
+        }
+    }
+
+    /**
+     */
+    public static function mustBeTraversable($value)
+    {
+        if ( ! static::isTraversable($value) ) {
+            $exception = new \InvalidArgumentException(
+                "A value must be Traversable instead of: \n"
                 .var_export($value, true)
             );
 

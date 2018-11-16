@@ -530,7 +530,7 @@ trait ChainableArray_Utils_Trait
                     $part_name  .= $value;
                 }
                 // elseif (is_function($value)) {
-                elseif (is_object($value) && ($value instanceof Closure)) {
+                elseif (is_object($value) && ($value instanceof \Closure)) {
                     $part_name .= 'unnamed-closure-'
                                 . hash('crc32b', var_export($value, true));
                 }
