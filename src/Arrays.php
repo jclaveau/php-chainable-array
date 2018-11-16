@@ -132,11 +132,14 @@ class Arrays
      * + If different merge as array
      */
     public static function mergeRecursiveCustom(
-        array $existing_row,
-        array $conflict_row,
+        $existing_row,
+        $conflict_row,
         callable $merge_resolver=null,
         $max_depth=null
     ){
+        static::mustBeCountable($existing_row);
+        static::mustBeCountable($conflict_row);
+
         foreach ($conflict_row as $column => $conflict_value) {
 
             // not existing in first array

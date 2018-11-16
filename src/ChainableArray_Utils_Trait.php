@@ -97,41 +97,6 @@ trait ChainableArray_Utils_Trait
     }
 
     /**
-     * @deprecated Arrays::mergeRecursiveCustom
-     */
-    public static function mergeRecursiveCustom(
-        array $existing_row,
-        array $conflict_row,
-        callable $merge_resolver=null,
-        $max_depth=null
-    ){
-        return Arrays::mergeRecursiveCustom(
-            $existing_row,
-            $conflict_row,
-            $merge_resolver,
-            $max_depth
-        );
-    }
-
-    /**
-     * @deprecated Arrays::mergePreservingDistincts()
-     */
-    public static function mergePreservingDistincts(
-        array $existing_row,
-        array $conflict_row
-    ) {
-        return Arrays::mergePreservingDistincts($existing_row, $conflict_row);
-    }
-
-    /**
-     * @deprecated Arrays::mergePreservingDistincts()
-     */
-    public static function keepUniqueColumnValues(array $row, array $excluded_columns=[])
-    {
-        return Arrays::keepUniqueColumnValues($row, $excluded_columns);
-    }
-
-    /**
      * Parses an array and group it rows by index. This index is generated
      * by the first parameter.
      * The row corresponding to the new index can be different from the
