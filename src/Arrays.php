@@ -329,27 +329,14 @@ class Arrays
                 );
             }
             elseif (is_object($value)) {
-                if (version_compare(phpversion(), '7.0.0', '>=')) {
-                    try {
-                        $sum += $value->toNumber();
-                    }
-                    catch (\Exception $e) {
-                        throw new \InvalidArgumentEXception(
-                             "Trying to sum a ".get_class($value)." object which cannot be casted as a number. "
-                            ."Please add a toNumber() method."
-                        );
-                    }
+                if ( ! method_exists($value, 'toNumber')) {
+                    throw new \InvalidArgumentEXception(
+                         "Trying to sum a ".get_class($value)." object which cannot be casted as a number. "
+                        ."Please add a toNumber() method."
+                    );
                 }
-                else {
-                    if ( ! method_exists($value, 'toNumber')) {
-                        throw new \InvalidArgumentEXception(
-                             "Trying to sum a ".get_class($value)." object which cannot be casted as a number. "
-                            ."Please add a toNumber() method."
-                        );
-                    }
 
-                    $sum += $value->toNumber();
-                }
+                $sum += $value->toNumber();
             }
         }
 
