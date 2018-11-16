@@ -90,7 +90,7 @@ trait ChainableArray_NativeFunctions_Trait
      */
     public function sum()
     {
-        return array_sum($this->data);
+        return Arrays::sum($this->data);
     }
 
     /**
