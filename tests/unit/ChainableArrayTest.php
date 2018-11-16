@@ -187,5 +187,20 @@ class ChainableArrayTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals( 3, count( $array ) );
     }
 
+    /**
+     */
+    public function test_from()
+    {
+        $array = ChainableArray::from([
+            'key_0' => 'zoubidou',
+            'key_1' => 'zoubidi',
+            'key_2' => 'zoubidi',
+        ]);
+
+        $array2 = ChainableArray::from($array);
+
+        $this->assertSame( $array2, $array );
+    }
+
     /**/
 }

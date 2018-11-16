@@ -27,8 +27,13 @@ class ChainableArray implements \ArrayAccess, \IteratorAggregate, \JsonSerializa
 
     /**
      */
-    public static function from(array $data=[], $isConstant=false)
+    public static function from($data=[], $isConstant=false)
     {
+        Arrays::mustBeCountable($data);
+
+        if ($data instanceof self)
+            return $data;
+
         return new static($data, $isConstant);
     }
 

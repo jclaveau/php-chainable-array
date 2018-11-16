@@ -444,7 +444,7 @@ class Arrays
             $trace_location  = debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0];
             $reflectionClass = new \ReflectionClass( get_class($exception) );
 
-            //file
+            // file
             if (isset($trace_location['file'])) {
                 $reflectionProperty = $reflectionClass->getProperty('file');
                 $reflectionProperty->setAccessible(true);
