@@ -507,8 +507,10 @@ trait ChainableArray_Utils_Trait
      *
      * @return string       The unique identifier of the group
      */
-    public static function generateGroupId(array $row, array $groups)
+    public static function generateGroupId($row, array $groups)
     {
+        Arrays::mustBeCountable($row);
+
         $group_parts = [];
 
         foreach ($groups as $key => $value) {
