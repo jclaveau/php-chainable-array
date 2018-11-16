@@ -194,9 +194,12 @@ class Arrays
      * @return array
      */
     public static function mergePreservingDistincts(
-        array $existing_row,
-        array $conflict_row
+        $existing_row,
+        $conflict_row
     ){
+        static::mustBeCountable($existing_row);
+        static::mustBeCountable($conflict_row);
+
         $merge = static::mergeRecursiveCustom(
             $existing_row,
             $conflict_row,
@@ -226,17 +229,12 @@ class Arrays
     /**
      * This is the cleaning part of self::mergePreservingDistincts()
      *
-     * @param  array|Traversable $row
+     * @param  array|Countable   $row
      * @param  array             $options : 'excluded_columns'
      */
     public static function cleanMergeDuplicates($row, array $options=[])
     {
-        if ( ! is_array($row) && ! $row instanceof \Traversable) {
-            throw new \InvalidArgumentException(
-                "\$row must be an array or a \Traversable instead of: \n"
-                .var_export($row, true)
-            );
-        }
+        static::mustBeCountable($row);
 
         $excluded_columns = isset($options['excluded_columns'])
                           ? $options['excluded_columns']
@@ -259,21 +257,17 @@ class Arrays
     }
 
     /**
-     * This is the cleaning part of self::mergePreservingDistincts()
+     * This is the cleaning last part of self::mergePreservingDistincts()
      *
-     * @param  array|Traversable $row
+     * @param  array|Countable   $row
      * @param  array             $options : 'excluded_columns'
      *
      * @see mergePreservingDistincts()
+     * @see cleanMergeDuplicates()
      */
     public static function cleanMergeBuckets($row, array $options=[])
     {
-        if ( ! is_array($row) && ! $row instanceof \Traversable) {
-            throw new \InvalidArgumentException(
-                "\$row must be an array or a \Traversable instead of: \n"
-                .var_export($row, true)
-            );
-        }
+        static::mustBeCountable($row);
 
         $excluded_columns = isset($options['excluded_columns'])
                           ? $options['excluded_columns']
@@ -301,12 +295,7 @@ class Arrays
      */
     public static function unique($array)
     {
-        if (! is_array($array) && ! $array instanceof \Traversable) {
-            throw new \InvalidArgumentException(
-                "\$array must be an array or a \Traversable instead of: \n"
-                .var_export($array, true)
-            );
-        }
+        static::mustBeCountable($array);
 
         $ids = [];
         foreach ($array as $key => $value) {
@@ -340,12 +329,7 @@ class Arrays
      */
     public static function sum($array)
     {
-        if (! is_array($array) && ! $array instanceof \Traversable) {
-            throw new \InvalidArgumentException(
-                "\$array must be an array or a \Traversable instead of: \n"
-                .var_export($array, true)
-            );
-        }
+        static::mustBeCountable($array);
 
         $sum = 0;
         foreach ($array as $key => &$value) { // &for optimization
@@ -421,6 +405,58 @@ class Arrays
         }
 
         return $weighted_sum / $weights_sum;
+    }
+
+    /**
+     * This is not required anymore with PHP 7.
+     *
+     * @return bool
+     */
+    public static function isTraversable($value)
+    {
+        return $value instanceof \Traversable || is_array($value);
+    }
+
+    /**
+     * This is not required anymore with PHP 7.
+     *
+     * @return bool
+     */
+    public static function isCountable($value)
+    {
+        return $value instanceof \Countable || is_array($value);
+    }
+
+    /**
+     */
+    public static function mustBeCountable($value)
+    {
+        if ( ! static::isCountable($value) ) {
+            $exception = new \InvalidArgumentException(
+                "A value must be Countable instead of: \n"
+                .var_export($value, true)
+            );
+
+            // The true location of the throw is still available through the backtrace
+            $trace_location  = debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0];
+            $reflectionClass = new \ReflectionClass( get_class($exception) );
+
+            //file
+            if (isset($trace_location['file'])) {
+                $reflectionProperty = $reflectionClass->getProperty('file');
+                $reflectionProperty->setAccessible(true);
+                $reflectionProperty->setValue($exception, $trace_location['file']);
+            }
+
+            // line
+            if (isset($trace_location['line'])) {
+                $reflectionProperty = $reflectionClass->getProperty('line');
+                $reflectionProperty->setAccessible(true);
+                $reflectionProperty->setValue($exception, $trace_location['line']);
+            }
+
+            throw $exception;
+        }
     }
 
     /**/

@@ -179,6 +179,25 @@ class ArraysTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(15, $sum);
     }
 
+    /**
+     */
+    public function test_mustBeCountable()
+    {
+        try {
+            Arrays::mustBeCountable('lalala');
+            $this->assertFalse(true, "An exception should have been thrown here");
+        }
+        catch (\Exception $e) {
+            $this->assertEquals( __FILE__, $e->getFile());
+            $this->assertEquals( __LINE__ - 5, $e->getLine());
+
+            $this->assertEquals(
+                "A value must be Countable instead of: \n'lalala'",
+                $e->getMessage()
+            );
+        }
+    }
+
     /**/
 }
 
