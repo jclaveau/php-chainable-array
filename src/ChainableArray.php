@@ -15,7 +15,7 @@ namespace JClaveau\Arrays;
  * @todo :
  * + recursive
  */
-class ChainableArray implements \ArrayAccess, \IteratorAggregate, \JsonSerializable
+class ChainableArray implements \ArrayAccess, \IteratorAggregate, \JsonSerializable, \Countable
 {
     use ChainableArray_ArrayAccess_Trait;
     use ChainableArray_NativeFunctions_Trait;
@@ -142,6 +142,16 @@ class ChainableArray implements \ArrayAccess, \IteratorAggregate, \JsonSerializa
     public function jsonSerialize()
     {
         return $this->data;
+    }
+
+    /**
+     * This method is required by the Countable interface.
+     *
+     * @see https://secure.php.net/manual/en/class.countable.php
+     */
+    public function count()
+    {
+        return count($this->data);
     }
 
     /**

@@ -224,36 +224,68 @@ class Arrays
     }
 
     /**
-     *
-     */
-    public static function cleanMergeBuckets($merged_row)
-    {
-        foreach ($merged_row as $entry => $values) {
-            if ($values instanceof MergeBucket) {
-                $merged_row[ $entry ] = $values->toArray();
-            }
-        }
-
-        return $merged_row;
-    }
-
-    /**
      * This is the cleaning part of self::mergePreservingDistincts()
      *
-     * @see mergePreservingDistincts()
+     * @param  array|Traversable $row
+     * @param  array             $options : 'excluded_columns'
      */
-    public static function keepUniqueColumnValues(array $row, array $excluded_columns=[])
+    public static function cleanMergeDuplicates($row, array $options=[])
     {
+        if ( ! is_array($row) && ! $row instanceof \Traversable) {
+            throw new \InvalidArgumentException(
+                "\$row must be an array or a \Traversable instead of: \n"
+                .var_export($row, true)
+            );
+        }
+
+        $excluded_columns = isset($options['excluded_columns'])
+                          ? $options['excluded_columns']
+                          : []
+                          ;
+
         foreach ($row as $column => &$values) {
-            if (!is_array($values))
+            if ( ! $values instanceof MergeBucket)
                 continue;
 
             if (in_array($column, $excluded_columns))
                 continue;
 
-            $values = array_unique($values);
+            $values = Arrays::unique($values);
             if (count($values) == 1)
                 $values = $values[0];
+        }
+
+        return $row;
+    }
+
+    /**
+     * This is the cleaning part of self::mergePreservingDistincts()
+     *
+     * @param  array|Traversable $row
+     * @param  array             $options : 'excluded_columns'
+     *
+     * @see mergePreservingDistincts()
+     */
+    public static function cleanMergeBuckets($row, array $options=[])
+    {
+        if ( ! is_array($row) && ! $row instanceof \Traversable) {
+            throw new \InvalidArgumentException(
+                "\$row must be an array or a \Traversable instead of: \n"
+                .var_export($row, true)
+            );
+        }
+
+        $excluded_columns = isset($options['excluded_columns'])
+                          ? $options['excluded_columns']
+                          : []
+                          ;
+
+        foreach ($row as $column => &$values) {
+            if (in_array($column, $excluded_columns))
+                continue;
+
+            if ($values instanceof MergeBucket)
+                $values = $values->toArray();
         }
 
         return $row;
@@ -298,8 +330,8 @@ class Arrays
     }
 
     /**
-     * Replacement of array_sum wich skips bad operands instead of
-     * throwing exceptions.
+     * Replacement of array_sum wich throws exceptions instead of skipping
+     * bad operands.
      *
      * @param  array|\Traversable $array
      * @return int|double         The sum

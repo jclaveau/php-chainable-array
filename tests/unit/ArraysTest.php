@@ -69,6 +69,50 @@ class ArraysTest extends \PHPUnit_Framework_TestCase
 
     /**
      */
+    public function test_cleanMergeDuplicates()
+    {
+        $existing_row = [
+            'entry_1' => 'plop',
+            4         => 'lolo',
+            'entry_2' => [
+                'lolo',
+            ],
+        ];
+
+        $conflict_row = [
+            'entry_1' => 'plouf',
+            4         => 'lolo',
+            'entry_2' => [
+                'lala',
+            ],
+        ];
+
+        $merged_row = Arrays::mergePreservingDistincts($existing_row, $conflict_row);
+        $merged_row = Arrays::cleanMergeDuplicates($merged_row);
+        $merged_row = Arrays::cleanMergeBuckets($merged_row);
+
+        $this->assertEquals(
+            [
+                'entry_1' => [
+                    'plop',
+                    'plouf',
+                ],
+                4 => 'lolo',
+                'entry_2' => [
+                    [
+                        'lolo',
+                    ],
+                    [
+                        'lala',
+                    ],
+                ],
+            ],
+            $merged_row
+        );
+    }
+
+    /**
+     */
     public function test_unique()
     {
         $array = [

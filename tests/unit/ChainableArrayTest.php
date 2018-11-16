@@ -15,7 +15,7 @@ class ChainableArrayTest extends \PHPUnit_Framework_TestCase
             'key_2' => 'zoubida',
         ])
         ;
-        
+
         $this->assertEquals(
             [
                 'key_0' => 'zoubidou',
@@ -36,7 +36,7 @@ class ChainableArrayTest extends \PHPUnit_Framework_TestCase
             'key_2' => 'zoubida',
         ])
         ;
-        
+
         $this->assertEquals(
             [
                 'key_0' => 'zoubidou',
@@ -57,12 +57,12 @@ class ChainableArrayTest extends \PHPUnit_Framework_TestCase
             'key_2' => 'zoubida',
         ])
         ->filter(function ($value, $key) {
-            return $key == 'key_2' 
+            return $key == 'key_2'
                 || $value == 'zoubidi'
                 ;
         })
         ;
-        
+
         $this->assertEquals(
             [
                 'key_1' => 'zoubidi',
@@ -83,7 +83,7 @@ class ChainableArrayTest extends \PHPUnit_Framework_TestCase
         ])
         ->unique()
         ;
-        
+
         $this->assertEquals(
             [
                 'key_0' => 'zoubidou',
@@ -109,7 +109,7 @@ class ChainableArrayTest extends \PHPUnit_Framework_TestCase
             return $a < $b ? -1 : 1;
         })
         ;
-        
+
         $this->assertEquals(
             [
                 'key_1' => 'zoubidi',
@@ -135,7 +135,7 @@ class ChainableArrayTest extends \PHPUnit_Framework_TestCase
             'key_7' => 'XD',
         ]) )
         ;
-        
+
         $this->assertEquals(
             [
                 'key_0' => 'zoubidou',
@@ -165,13 +165,26 @@ class ChainableArrayTest extends \PHPUnit_Framework_TestCase
         catch (\Exception $e) {
             $this->assertEquals( __LINE__ - 4 , $e->getLine());
             $this->assertEquals( __FILE__, $e->getFile());
-            
+
             $this->assertEquals(
                 "\$otherTable must be an array or an instance of JClaveau\Arrays\ChainableArray instead of: 'azertyui'",
                 $e->getMessage()
             );
-            
+
         }
+    }
+
+    /**
+     */
+    public function test_count()
+    {
+        $array = ChainableArray::from([
+            'key_0' => 'zoubidou',
+            'key_1' => 'zoubidi',
+            'key_2' => 'zoubidi',
+        ]);
+
+        $this->assertEquals( 3, count( $array ) );
     }
 
     /**/
