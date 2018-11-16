@@ -298,6 +298,65 @@ class Arrays
     }
 
     /**
+     * Replacement of array_sum wich skips bad operands instead of
+     * throwing exceptions.
+     *
+     * @param  array|\Traversable $array
+     * @return int|double         The sum
+     *
+     * @todo   Support options like 'strict', 'skip_non_scalars', 'native'
+     */
+    public static function sum($array)
+    {
+        if (! is_array($array) && ! $array instanceof \Traversable) {
+            throw new \InvalidArgumentException(
+                "\$array must be an array or a \Traversable instead of: \n"
+                .var_export($array, true)
+            );
+        }
+
+        $sum = 0;
+        foreach ($array as $key => &$value) { // &for optimization
+            if (is_scalar($value)) {
+                $sum += $value;
+            }
+            elseif (is_null($value)) {
+                continue;
+            }
+            elseif (is_array($value)) {
+                throw new \InvalidArgumentException(
+                    "Trying to sum an array with '$sum': ".var_export($value, true)
+                );
+            }
+            elseif (is_object($value)) {
+                if (version_compare(phpversion(), '7.0.0', '>=')) {
+                    try {
+                        $sum += $value->toNumber();
+                    }
+                    catch (\Exception $e) {
+                        throw new \InvalidArgumentEXception(
+                             "Trying to sum a ".get_class($value)." object which cannot be casted as a number. "
+                            ."Please add a toNumber() method."
+                        );
+                    }
+                }
+                else {
+                    if ( ! method_exists($value, 'toNumber')) {
+                        throw new \InvalidArgumentEXception(
+                             "Trying to sum a ".get_class($value)." object which cannot be casted as a number. "
+                            ."Please add a toNumber() method."
+                        );
+                    }
+
+                    $sum += $value->toNumber();
+                }
+            }
+        }
+
+        return $sum;
+    }
+
+    /**
      * This method returns a classical mathemartic weighted mean.
      *
      * @todo It would ideally handled by a bridge with this fantastic math
@@ -309,6 +368,12 @@ class Arrays
      */
     public static function weightedMean($values, $weights)
     {
+        if ($values instanceof ChainableArray)
+            $values = $values->toArray();
+
+        if ($weights instanceof ChainableArray)
+            $weights = $weights->toArray();
+
         if ( ! is_array($values))
             $values = [$values];
 

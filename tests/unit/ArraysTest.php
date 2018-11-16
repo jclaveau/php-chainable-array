@@ -96,5 +96,59 @@ class ArraysTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+    /**
+     */
+    public function test_sum()
+    {
+        $array = [4, 5, 6];
+        $sum = Arrays::sum($array);
+        $this->assertEquals(15, $sum);
+
+        // summing array
+        $array = [4, 5, [12]];
+        try {
+            $sum = Arrays::sum($array);
+            $this->assertFalse(true, "An exception should have been thrown here");
+        }
+        catch (\Exception $e) {
+            $this->assertEquals(
+                "Trying to sum an array with '9': array (\n  0 => 12,\n)",
+                $e->getMessage()
+            );
+        }
+
+        // summing objects
+        $array = [4, 5, (object) [12]];
+        try {
+            $sum = Arrays::sum($array);
+            $this->assertFalse(true, "An exception should have been thrown here");
+        }
+        catch (\Exception $e) {
+            $this->assertEquals(
+                "Trying to sum a stdClass object which cannot be casted as a number. Please add a toNumber() method.",
+                $e->getMessage()
+            );
+        }
+
+        $array = [4, 5, new NumberableObject(6)];
+        $sum = Arrays::sum($array);
+        $this->assertEquals(15, $sum);
+    }
+
     /**/
+}
+
+class NumberableObject
+{
+    protected $value;
+
+    public function __construct($value)
+    {
+        $this->value = $value;
+    }
+
+    public function toNumber()
+    {
+        return $this->value;
+    }
 }
