@@ -13,10 +13,10 @@
     "minimum-stability": "stable",
     "autoload": {
         "psr-4" : {
-            "JClaveau\\Arrays\\" : "src"
+            "JClaveau\\" : "src"
         },
         "files": [
-              "src/functions.php",
+              "src/Arrays/functions.php",
               "src/polyfills.php"
         ]
     },

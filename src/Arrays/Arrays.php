@@ -1,5 +1,6 @@
 <?php
 namespace JClaveau\Arrays;
+use       JClaveau\Exceptions\UsageException;
 
 /**
  *
@@ -599,7 +600,8 @@ class Arrays
             }
             /**/
             else {
-                self::throwUsageException(
+                // self::throwUsageException(
+                throw new UsageException(
                     'Bad value provided for groupBy id generation: '
                     .var_export($group_definition_value, true)
                     ."\n" . var_export($row, true)

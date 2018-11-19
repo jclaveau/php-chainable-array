@@ -1,5 +1,6 @@
 <?php
 namespace JClaveau\Arrays;
+use       JClaveau\Exceptions\UsageException;
 
 class ArraysTest extends \PHPUnit_Framework_TestCase
 {
@@ -287,6 +288,23 @@ class ArraysTest extends \PHPUnit_Framework_TestCase
             'key_value_separator' => '=>',
             'groups_separator'    => '~',
         ]) );
+
+        try {
+            $this->assertEquals('col_1:12-col_2:', Arrays::generateGroupId($row, [
+                ['fghjkl']
+            ]) );
+
+            $this->assertTrue( false, 'An exception should elready be thrown');
+        }
+        catch (UsageException $e) {
+            $this->assertEquals( __FILE__, $e->getFile());
+            $this->assertEquals(
+                   __LINE__ - 6 // PHP 5.6
+                || __LINE__ - 7 // PHP 7
+                , $e->getLine()
+            );
+        }
+
     }
 
     /**/
