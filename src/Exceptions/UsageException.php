@@ -27,6 +27,18 @@ class UsageException extends \Exception
 
     /**
      */
+    public function setStackLocationHere()
+    {
+        $this->rewindStackWhile( function($backtrace, $level) {
+            // Finds the closest caller
+            return $level == 0;
+        }, 2 );
+
+        return $this;
+    }
+
+    /**
+     */
     protected function rewindStackWhile(callable $scope_checker, $stack_max_depth=20)
     {
         $backtrace = debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS, $stack_max_depth);
