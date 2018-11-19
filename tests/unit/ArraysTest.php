@@ -350,6 +350,24 @@ class ArraysTest extends \PHPUnit_Framework_TestCase
             ));
         }
 
+        $row['col_6'] = MergeBucket::from([
+            'lalala',
+            'lololo',
+        ]);
+        $row['col_7'] = [
+            'lalala',
+            'lololo',
+        ];
+        $chainable_row = ChainableArray::from($row);
+        $this->assertEquals(
+            'col_1:12-col_2:-col_6:JClaveau\Arrays\MergeBucket_98133d8e-col_7:array_712811e5',
+            Arrays::generateGroupId($chainable_row, [
+                'col_1',
+                'col_2',
+                'col_6',
+                'col_7',
+            ])
+        );
     }
 
     /**/

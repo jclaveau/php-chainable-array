@@ -572,7 +572,9 @@ class Arrays
             }
 
             if (is_string($group_definition_value)) {
-                if ( ! array_key_exists($group_definition_value, $row)) {
+                if (    (is_array($row)              && ! array_key_exists($group_definition_value, $row))
+                    ||  ($row instanceof \ArrayAcces && ! $row->offsetExists($group_definition_value))
+                ) {
                     throw new UsageException(
                         'Unset column for group id generation: '
                         .var_export($group_definition_value, true)
@@ -584,7 +586,9 @@ class Arrays
                 $group_result_value = $row[ $group_definition_value ];
             }
             elseif (is_int($group_definition_value)) {
-                if ( ! array_key_exists($group_definition_value, $row)) {
+                if (    (is_array($row)              && ! array_key_exists($group_definition_value, $row))
+                    ||  ($row instanceof \ArrayAcces && ! $row->offsetExists($group_definition_value))
+                ) {
                     throw new UsageException(
                         'Unset column for group id generation: '
                         .var_export($group_definition_value, true)
