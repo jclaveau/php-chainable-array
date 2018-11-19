@@ -452,67 +452,183 @@ class Arrays
     }
 
     /**
+     * @param  mixed $value
+     * @return bool  Is the $value countable or not
+     * @throws InvalidArgumentException
+     *
+     * @todo   NotCountableException
      */
     public static function mustBeCountable($value)
     {
-        if ( ! static::isCountable($value) ) {
-            $exception = new \InvalidArgumentException(
-                "A value must be Countable instead of: \n"
-                .var_export($value, true)
-            );
+        if (static::isCountable($value))
+            return true;
 
-            // The true location of the throw is still available through the backtrace
-            $trace_location  = debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0];
-            $reflectionClass = new \ReflectionClass( get_class($exception) );
+        $exception = new \InvalidArgumentException(
+            "A value must be Countable instead of: \n"
+            .var_export($value, true)
+        );
 
-            // file
-            if (isset($trace_location['file'])) {
-                $reflectionProperty = $reflectionClass->getProperty('file');
-                $reflectionProperty->setAccessible(true);
-                $reflectionProperty->setValue($exception, $trace_location['file']);
-            }
+        // The true location of the throw is still available through the backtrace
+        $trace_location  = debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0];
+        $reflectionClass = new \ReflectionClass( get_class($exception) );
 
-            // line
-            if (isset($trace_location['line'])) {
-                $reflectionProperty = $reflectionClass->getProperty('line');
-                $reflectionProperty->setAccessible(true);
-                $reflectionProperty->setValue($exception, $trace_location['line']);
-            }
-
-            throw $exception;
+        // file
+        if (isset($trace_location['file'])) {
+            $reflectionProperty = $reflectionClass->getProperty('file');
+            $reflectionProperty->setAccessible(true);
+            $reflectionProperty->setValue($exception, $trace_location['file']);
         }
+
+        // line
+        if (isset($trace_location['line'])) {
+            $reflectionProperty = $reflectionClass->getProperty('line');
+            $reflectionProperty->setAccessible(true);
+            $reflectionProperty->setValue($exception, $trace_location['line']);
+        }
+
+        throw $exception;
     }
 
     /**
+     * @param  mixed $value
+     * @return bool  Is the $value traversable or not
+     * @throws InvalidArgumentException
+     *
+     * @todo   NotTraversableException
      */
     public static function mustBeTraversable($value)
     {
-        if ( ! static::isTraversable($value) ) {
-            $exception = new \InvalidArgumentException(
-                "A value must be Traversable instead of: \n"
-                .var_export($value, true)
-            );
+        if (static::isTraversable($value))
+            return true;
 
-            // The true location of the throw is still available through the backtrace
-            $trace_location  = debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0];
-            $reflectionClass = new \ReflectionClass( get_class($exception) );
+        $exception = new \InvalidArgumentException(
+            "A value must be Traversable instead of: \n"
+            .var_export($value, true)
+        );
 
-            // file
-            if (isset($trace_location['file'])) {
-                $reflectionProperty = $reflectionClass->getProperty('file');
-                $reflectionProperty->setAccessible(true);
-                $reflectionProperty->setValue($exception, $trace_location['file']);
-            }
+        // The true location of the throw is still available through the backtrace
+        $trace_location  = debug_backtrace( DEBUG_BACKTRACE_IGNORE_ARGS, 1)[0];
+        $reflectionClass = new \ReflectionClass( get_class($exception) );
 
-            // line
-            if (isset($trace_location['line'])) {
-                $reflectionProperty = $reflectionClass->getProperty('line');
-                $reflectionProperty->setAccessible(true);
-                $reflectionProperty->setValue($exception, $trace_location['line']);
-            }
-
-            throw $exception;
+        // file
+        if (isset($trace_location['file'])) {
+            $reflectionProperty = $reflectionClass->getProperty('file');
+            $reflectionProperty->setAccessible(true);
+            $reflectionProperty->setValue($exception, $trace_location['file']);
         }
+
+        // line
+        if (isset($trace_location['line'])) {
+            $reflectionProperty = $reflectionClass->getProperty('line');
+            $reflectionProperty->setAccessible(true);
+            $reflectionProperty->setValue($exception, $trace_location['line']);
+        }
+
+        throw $exception;
+    }
+
+    /**
+     * Generates an id usable in hashes to identify a single grouped row.
+     *
+     * @param array $row    The row of the array to group by.
+     * @param array $groups A list of the different groups. Groups can be
+     *                      strings describing a column name or a callable
+     *                      function, an array representing a callable,
+     *                      a function or an integer representing a column.
+     *                      If the index of the group is a string, it will
+     *                      be used as a prefix for the group name.
+     *                      Example:
+     *                      [
+     *                          'column_name',
+     *                          'function_to_call',
+     *                          4,  //column_number
+     *                          'group_prefix'  => function($row){},
+     *                          'group_prefix2' => [$object, 'method'],
+     *                      ]
+     *
+     * @return string       The unique identifier of the group
+     */
+    public static function generateGroupId($row, array $groups_definitions, array $options=[])
+    {
+        Arrays::mustBeCountable($row);
+
+        $key_value_separator = ! empty($options['key_value_separator'])
+                             ? $options['key_value_separator']
+                             : ':'
+                             ;
+
+        $groups_separator    = ! empty($options['groups_separator'])
+                             ? $options['groups_separator']
+                             : '-'
+                             ;
+
+        $group_parts = [];
+        foreach ($groups_definitions as $group_definition_key => $group_definition_value) {
+            $part_name = '';
+
+            if (is_string($group_definition_key)) {
+                $part_name .= $group_definition_key.'_';
+            }
+
+            if (is_string($group_definition_value) && array_key_exists($group_definition_value, $row)) {
+                $part_name         .= $group_definition_value;
+                $group_result_value = $row[ $group_definition_value ];
+            }
+            elseif (is_int($group_definition_value)) {
+                $part_name         .= $group_definition_value ? : '0';
+                $group_result_value = $row[ $group_definition_value ];
+            }
+            /* TODO check this is not just dead code * /
+            elseif (is_callable($group_definition_value)) {
+
+                if (is_string($group_definition_value)) {
+                    $part_name .= $group_definition_value;
+                }
+                // elseif (is_function($value)) {
+                elseif (is_object($value) && ($value instanceof \Closure)) {
+                    $part_name .= 'unnamed-closure-'
+                                . hash('crc32b', var_export($group_definition_value, true));
+                }
+                elseif (is_array($group_definition_value)) {
+                    $part_name .= implode('::', $group_definition_value);
+                }
+
+                $group_result_value = call_user_func_array($group_definition_value, [
+                    $row, &$part_name
+                ]);
+            }
+            /**/
+            else {
+                self::throwUsageException(
+                    'Bad value provided for groupBy id generation: '
+                    .var_export($group_definition_value, true)
+                    ."\n" . var_export($row, true)
+                );
+            }
+
+            if (!is_null($part_name))
+                $group_parts[ $part_name ] = $group_result_value;
+        }
+
+        // sort the groups by names (without it the same group could have multiple ids)
+        ksort($group_parts);
+
+        // bidimensional implode
+        $out = [];
+        foreach ($group_parts as $group_name => $group_value) {
+            if (is_object($group_value)) {
+                $group_value = get_class($group_value)
+                             . '_'
+                             . hash( 'crc32b', var_export($group_value, true) );
+            }
+            elseif (is_array($group_value)) {
+                $group_value = 'array_' . hash( 'crc32b', var_export($group_value, true) );
+            }
+
+            $out[] = $group_name . $key_value_separator . $group_value;
+        }
+
+        return implode($groups_separator, $out);
     }
 
     /**/

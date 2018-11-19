@@ -234,6 +234,61 @@ class ArraysTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse( Arrays::keyExists('lolo', ChainableArray::from(['lala' => null]) ) );
     }
 
+    /**
+     */
+    public function test_generateGroupId()
+    {
+        $row = [
+            'col_1' => 12,
+            'col_2' => null,
+            'col_3' => function ($argument) {
+                return $argument . '_suffixe';
+            },
+            4 => 'value_of_fourth_col',
+            'col_5' => [
+                'lala',
+                'lolo',
+            ],
+        ];
+
+        $this->assertEquals('col_1:12', Arrays::generateGroupId($row, [
+            'col_1',
+        ]) );
+
+        $this->assertEquals('col_2:', Arrays::generateGroupId($row, [
+            'col_2',
+        ]) );
+
+        $this->assertEquals('col_3:Closure_1ac7e0c5', Arrays::generateGroupId($row, [
+            'col_3',
+        ]) );
+
+        $this->assertEquals('4:value_of_fourth_col', Arrays::generateGroupId($row, [
+            4,
+        ]) );
+
+        $this->assertEquals('column_4:value_of_fourth_col', Arrays::generateGroupId($row, [
+            'column' => 4,
+        ]) );
+
+        $this->assertEquals('col_5:array_8940e967', Arrays::generateGroupId($row, [
+            'col_5',
+        ]) );
+
+        $this->assertEquals('col_1:12-col_2:', Arrays::generateGroupId($row, [
+            'col_1',
+            'col_2',
+        ]) );
+
+        $this->assertEquals('col_1=>12~col_2=>', Arrays::generateGroupId($row, [
+            'col_1',
+            'col_2',
+        ], [
+            'key_value_separator' => '=>',
+            'groups_separator'    => '~',
+        ]) );
+    }
+
     /**/
 }
 
