@@ -31,8 +31,8 @@ class UsageException extends \Exception
     {
         $this->rewindStackWhile( function($backtrace, $level) {
             // Finds the closest caller
-            return $level == 0;
-        }, 2 );
+            return $level < 2;
+        }, 4 );
 
         return $this;
     }
@@ -47,14 +47,18 @@ class UsageException extends \Exception
         while ( $scope_checker( $backtrace, $i ) ) {
             $i++;
             $caller = $backtrace[$i];
-            // TODO remove the prevuce levels of the stack?
+            // TODO remove the previous levels of the stack?
         }
 
         // var_export($backtrace);
         // var_export($caller);
 
-        $this->file = $caller['file'];
-        $this->line = $caller['line'];
+        // TODO How to handle perfectly the missing fields of the backtrace?
+        if (isset($caller['file']))
+            $this->file = $caller['file'];
+
+        if (isset($caller['line']))
+            $this->line = $caller['line'];
 
         // var_export($this->stack);
     }

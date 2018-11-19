@@ -26,6 +26,12 @@ class UsagExceptionTest extends \PHPUnit_Framework_TestCase
      */
     public function test_setStackLocationHere()
     {
+        // This method only to be the vadly called one
+        $this->callSomeMethodAndMoveExceptionLocation();
+    }
+
+    protected function callSomeMethodAndMoveExceptionLocation()
+    {
         try {
             (new BadlyUsedObject)->someMethod();
             $this->assertFalse(true, "An exception should have been thrown already");
@@ -35,7 +41,7 @@ class UsagExceptionTest extends \PHPUnit_Framework_TestCase
             $e->setStackLocationHere();
 
             $this->assertEquals( __FILE__, $e->getFile());
-            $this->assertEquals( __LINE__ - 3, $e->getLine());
+            $this->assertEquals( __LINE__ - 14, $e->getLine());
 
             $this->assertEquals(
                 "someMethod badly used",
