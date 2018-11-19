@@ -9,6 +9,7 @@ It's also opened to integrate it with CI tools.
 
 ## Quality
 [![Build Status](https://travis-ci.org/jclaveau/php-chainable-array.png?branch=master)](https://travis-ci.org/jclaveau/php-chainable-array)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/jclaveau/php-chainable-array/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/jclaveau/php-chainable-array/?branch=master)
 [![codecov](https://codecov.io/gh/jclaveau/php-chainable-array/branch/master/graph/badge.svg)](https://codecov.io/gh/jclaveau/php-chainable-array)
 [![Maintainability](https://api.codeclimate.com/v1/badges/eb85279bcfb224b7af1c/maintainability)](https://codeclimate.com/github/jclaveau/php-chainable-array/maintainability)
 [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/jclaveau/php-chainable-array/issues)
