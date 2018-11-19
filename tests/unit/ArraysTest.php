@@ -303,6 +303,51 @@ class ArraysTest extends \PHPUnit_Framework_TestCase
                 || __LINE__ - 7 // PHP 7
                 , $e->getLine()
             );
+
+            $this->assertEquals( 1, preg_match(
+                "#^Bad value provided for group id generation:#",
+                $e->getMessage()
+            ));
+        }
+
+        try {
+            $this->assertEquals('col_1:12-col_2:', Arrays::generateGroupId($row, [
+                'unset_column'
+            ]) );
+
+            $this->assertTrue( false, 'An exception should elready be thrown');
+        }
+        catch (UsageException $e) {
+            $this->assertEquals( __FILE__, $e->getFile());
+            $this->assertEquals(
+                   __LINE__ - 6 // PHP 5.6
+                || __LINE__ - 7 // PHP 7
+                , $e->getLine()
+            );
+            $this->assertEquals( 1, preg_match(
+                "#^Unset column for group id generation: 'unset_column'#",
+                $e->getMessage()
+            ));
+        }
+
+        try {
+            $this->assertEquals('col_1:12-col_2:', Arrays::generateGroupId($row, [
+                12
+            ]) );
+
+            $this->assertTrue( false, 'An exception should elready be thrown');
+        }
+        catch (UsageException $e) {
+            $this->assertEquals( __FILE__, $e->getFile());
+            $this->assertEquals(
+                   __LINE__ - 6 // PHP 5.6
+                || __LINE__ - 7 // PHP 7
+                , $e->getLine()
+            );
+            $this->assertEquals( 1, preg_match(
+                "#^Unset column for group id generation: 12#",
+                $e->getMessage()
+            ));
         }
 
     }

@@ -571,11 +571,27 @@ class Arrays
                 $part_name .= $group_definition_key.'_';
             }
 
-            if (is_string($group_definition_value) && array_key_exists($group_definition_value, $row)) {
+            if (is_string($group_definition_value)) {
+                if ( ! array_key_exists($group_definition_value, $row)) {
+                    throw new UsageException(
+                        'Unset column for group id generation: '
+                        .var_export($group_definition_value, true)
+                        ."\n" . var_export($row, true)
+                    );
+                }
+
                 $part_name         .= $group_definition_value;
                 $group_result_value = $row[ $group_definition_value ];
             }
             elseif (is_int($group_definition_value)) {
+                if ( ! array_key_exists($group_definition_value, $row)) {
+                    throw new UsageException(
+                        'Unset column for group id generation: '
+                        .var_export($group_definition_value, true)
+                        ."\n" . var_export($row, true)
+                    );
+                }
+
                 $part_name         .= $group_definition_value ? : '0';
                 $group_result_value = $row[ $group_definition_value ];
             }
@@ -600,9 +616,8 @@ class Arrays
             }
             /**/
             else {
-                // self::throwUsageException(
                 throw new UsageException(
-                    'Bad value provided for groupBy id generation: '
+                    'Bad value provided for group id generation: '
                     .var_export($group_definition_value, true)
                     ."\n" . var_export($row, true)
                 );
