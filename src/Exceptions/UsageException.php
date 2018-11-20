@@ -20,6 +20,8 @@ class UsageException extends \Exception
 
         $this->rewindStackWhile( function($backtrace, $level) {
             // Finds the closest caller
+            // TODO get the class of the caller instead of comparing
+            // with UsageException
             return  isset($backtrace[ $level ]['class'])
                 &&  $backtrace[ $level ]['class'] == __CLASS__;
         }, 0 );

@@ -599,14 +599,13 @@ class Arrays
                 $part_name         .= $group_definition_value ? : '0';
                 $group_result_value = $row[ $group_definition_value ];
             }
-            /* TODO check this is not just dead code * /
             elseif (is_callable($group_definition_value)) {
 
                 if (is_string($group_definition_value)) {
                     $part_name .= $group_definition_value;
                 }
                 // elseif (is_function($value)) {
-                elseif (is_object($value) && ($value instanceof \Closure)) {
+                elseif (is_object($group_definition_value) && ($group_definition_value instanceof \Closure)) {
                     $part_name .= 'unnamed-closure-'
                                 . hash('crc32b', var_export($group_definition_value, true));
                 }
@@ -618,7 +617,6 @@ class Arrays
                     $row, &$part_name
                 ]);
             }
-            /**/
             else {
                 throw new UsageException(
                     'Bad value provided for group id generation: '

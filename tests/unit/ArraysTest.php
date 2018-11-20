@@ -368,6 +368,17 @@ class ArraysTest extends \PHPUnit_Framework_TestCase
                 'col_7',
             ])
         );
+
+
+        $this->assertEquals(
+            'col_1:12-unnamed-closure-1ac7e0c5:value_of_fourth_col12',
+            Arrays::generateGroupId($row, [
+                'col_1',
+                function($row, &$key) {
+                    return $row[4] . $row['col_1'];
+                }
+            ])
+        );
     }
 
     /**/
