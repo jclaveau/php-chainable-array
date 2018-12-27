@@ -7,5 +7,12 @@ namespace JClaveau\Arrays;
  */
 class MergeBucket extends ChainableArray
 {
+    /**
+     */
+    public function reduceIfUnique()
+    {
+        if ($this->unique()->count() == 1)
+            return reset( $this->data );
+    }
     /**/
 }
