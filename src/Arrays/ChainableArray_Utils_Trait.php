@@ -178,8 +178,13 @@ trait ChainableArray_Utils_Trait
                 $out[$key] = $row;
             }
             else {
-                if ($conflictResolver === null)
-                    self::throwUsageException('No conflict resolver for a merge provoking one');
+                if ($conflictResolver === null) {
+                    self::throwUsageException(
+                        "No conflict resolver for a merge provoking one: $key \n\n"
+                        .var_export($row, true) . "\n\n"
+                        .var_export($out[$key], true)
+                    );
+                }
 
                 $arguments = [
                     &$key,
