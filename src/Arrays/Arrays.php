@@ -196,38 +196,75 @@ class Arrays
      * @param  array $conflict_row
      *
      * @return array
+     * 
+     * @deprecated
      */
     public static function mergePreservingDistincts(
         $existing_row,
         $conflict_row
     ){
+        return self::mergeInColumnBuckets($existing_row, $conflict_row);
+    }
+
+    /**
+     * Merges two rows by replacing their column values by MergeBuckets
+     * containing their values.
+     *
+     * @param  array  $existing_row
+     * @param  array  $conflict_row
+     * @param  scalar $key
+     *
+     * @return array
+     */
+    public static function mergeInColumnBuckets(
+        $existing_row,
+        $conflict_row,
+        $existing_key=null,
+        $conflict_key=null
+    ) {
         static::mustBeCountable($existing_row);
         static::mustBeCountable($conflict_row);
-
-        $merge = static::mergeRecursiveCustom(
-            $existing_row,
-            $conflict_row,
-            function ($existing_value, $conflict_value, $column) {
-
-                if ( ! $existing_value instanceof MergeBucket) {
-                    $existing_value = MergeBucket::from()->push($existing_value);
+        
+        $merged_row = [];
+        foreach ($existing_row as $existing_column => $existing_value) {
+            if ($existing_value instanceof MergeBucket) {
+                $merged_row[ $existing_column ] = $existing_value;
+            }
+            else {
+                if (isset($existing_key)) {
+                    $merged_row[ $existing_column ] = MergeBucket::from([
+                        $existing_key => $existing_value
+                    ]);
                 }
-
-                // We store the new value with their previous ones
-                if ( ! $conflict_value instanceof MergeBucket) {
-                    $conflict_value = MergeBucket::from()->push($conflict_value);
+                else {
+                    $merged_row[ $existing_column ] = MergeBucket::from([
+                        $existing_value
+                    ]);
                 }
-
-                foreach ($conflict_value->toArray() as $conflict_key => $conflict_entry) {
-                    $existing_value->push($conflict_entry);
+            }
+        }
+        
+        foreach ($conflict_row as $conflict_column => $conflict_value) {
+            if (! isset($merged_row[ $conflict_column ])) {
+                $merged_row[ $conflict_column ] = new MergeBucket;
+            }
+            
+            if ($conflict_value instanceof MergeBucket) {
+                foreach ($conflict_value as $conflict_bucket_value) {
+                    $merged_row[ $existing_column ] = $conflict_bucket_value;
                 }
-
-                return $existing_value;
-            },
-            0
-        );
-
-        return $merge;
+            }
+            else {
+                if (isset($conflict_key)) {
+                    $merged_row[ $conflict_column ][$conflict_key] = $conflict_value;
+                }
+                else {
+                    $merged_row[ $conflict_column ][] = $conflict_value;
+                }
+            }
+        }
+        
+        return $merged_row;
     }
 
     /**
@@ -279,11 +316,13 @@ class Arrays
                           ;
 
         foreach ($row as $column => &$values) {
-            if (in_array($column, $excluded_columns))
+            if (in_array($column, $excluded_columns)) {
                 continue;
+            }
 
-            if ($values instanceof MergeBucket)
+            if ($values instanceof MergeBucket) {
                 $values = $values->toArray();
+            }
         }
 
         return $row;
