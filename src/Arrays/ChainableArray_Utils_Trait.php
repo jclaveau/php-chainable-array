@@ -720,5 +720,38 @@ trait ChainableArray_Utils_Trait
         return new static($out);
     }
 
+    /**
+     * 
+     */
+    public function flatten()
+    {
+        $result = [];
+        foreach ($this->data as $key => $value) {
+            if ( ! Arrays::isTraversable($value)) {
+                $result[ $key ] = $value;
+            }
+            else {
+                foreach ($value as $sub_key => $sub_value) {
+                    if (is_int($sub_key)) {
+                        $result[] = $sub_value;
+                    }
+                    elseif (isset($result[ $sub_key ])) {
+                        throw new \LogicException(
+                            "Conflict during flatten merge for key $sub_key between: \n"
+                            ."Existing: " . var_export($result[ $sub_key ], true)
+                            ."\n and \n"
+                            ."Conflict: " . var_export($sub_value, true)
+                        );
+                    }
+                    else {
+                        $result[ $sub_key ] = $sub_value;
+                    }
+                }
+            }
+        }
+
+        return $this->returnConstant($result);
+    }
+
     /**/
 }
