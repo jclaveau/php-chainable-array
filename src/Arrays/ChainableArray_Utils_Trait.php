@@ -753,5 +753,11 @@ trait ChainableArray_Utils_Trait
         return $this->returnConstant($result);
     }
 
+    public function flattenMergeBuckets()
+    {
+        $result = Arrays::flattenMergeBuckets($this->data);
+        return $this->returnConstant($result);
+    }
+    
     /**/
 }
