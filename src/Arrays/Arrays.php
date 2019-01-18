@@ -251,7 +251,12 @@ class Arrays
             
             if ($conflict_value instanceof MergeBucket) {
                 foreach ($conflict_value as $conflict_bucket_value) {
-                    $merged_row[ $existing_column ] = $conflict_bucket_value;
+                    if (isset($conflict_key)) {
+                        $merged_row[ $conflict_column ][$conflict_key] = $conflict_bucket_value;
+                    }
+                    else {
+                        $merged_row[ $conflict_column ][] = $conflict_bucket_value;
+                    }
                 }
             }
             else {

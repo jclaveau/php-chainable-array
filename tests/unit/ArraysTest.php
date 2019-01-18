@@ -83,7 +83,7 @@ class ArraysTest extends \PHPUnit_Framework_TestCase
     
     /**
      */
-    public function test_test_mergeInColumnBuckets_multiple()
+    public function test_mergeInColumnBuckets_multiple()
     {
         $existing_row = [
             'entry_1' => 'plop',
@@ -147,7 +147,7 @@ class ArraysTest extends \PHPUnit_Framework_TestCase
     
     /**
      */
-    public function test_test_mergeInColumnBuckets_multiple_assoc()
+    public function test_mergeInColumnBuckets_multiple_assoc()
     {
         $existing_row = [
             'entry_1' => 'plop',
@@ -212,6 +212,50 @@ class ArraysTest extends \PHPUnit_Framework_TestCase
                         'lele',
                     ],
                 ],
+            ],
+            $merged_row
+        );
+    }
+    
+    /**
+     */
+    public function test_mergeInColumnBuckets_mergeValuesOnNull()
+    {
+        $existing_row = [
+            'count' => NULL,
+        ];
+
+        $conflict_row = [
+            'id' => MergeBucket::from([
+                0 => 288,
+                1 => 529,
+                2 => 528,
+                3 => 350,
+            ]),
+            'event' => 'my_event',
+            'count' => 123,
+        ];
+
+        $merged_row = Arrays::mergeInColumnBuckets(
+            $existing_row, 
+            $conflict_row
+        );
+
+        $this->assertEquals(
+            [
+                'id' => MergeBucket::from([
+                    0 => 288,
+                    1 => 529,
+                    2 => 528,
+                    3 => 350,
+                ]),
+                'event' => MergeBucket::from([
+                    'my_event',
+                ]),
+                'count' => MergeBucket::from([
+                    null,
+                    123,
+                ]),
             ],
             $merged_row
         );
