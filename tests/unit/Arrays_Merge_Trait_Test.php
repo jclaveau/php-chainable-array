@@ -300,6 +300,46 @@ trait Arrays_Merge_Trait_Test
 
     /**
      */
+    public function test_cleanMergeBuckets_with_excludedColumns()
+    {
+        $merged_row = [
+            'entry_1' => MergeBucket::from([
+                'plop',
+            ]),
+            4 => MergeBucket::from([
+                'lolo',
+                null,
+            ]),
+            'entry_2' => MergeBucket::from([
+                ['lolo'],
+            ]),
+        ];
+
+        $merged_row = Arrays::cleanMergeBuckets($merged_row, [
+            'excluded_columns' => ['entry_1'],
+        ]);
+
+        $this->assertEquals(
+            [
+                'entry_1' => MergeBucket::from([
+                    'plop',
+                ]),
+                4 => [
+                    'lolo',
+                    null,
+                ],
+                'entry_2' => [
+                    [
+                        'lolo',
+                    ],
+                ],
+            ],
+            $merged_row
+        );
+    }
+
+    /**
+     */
     public function test_cleanMergeDuplicates()
     {
         $existing_row = [
@@ -357,6 +397,11 @@ trait Arrays_Merge_Trait_Test
             MergeBucket::from([
                 ['lolo'],
             ]),
+            MergeBucket::from([
+                'key_1' => 'lolo',
+                'key_2' => 'lulu',
+            ]),
+            'prout',
         ];
 
         $flattened_row = Arrays::flattenMergeBuckets($result_of_array_column);
@@ -367,9 +412,42 @@ trait Arrays_Merge_Trait_Test
                 'lolo',
                 null,
                 ['lolo'],
+                'key_1' => 'lolo',
+                'key_2' => 'lulu',
+                'prout',
             ],
             $flattened_row
         );
+    }
+
+    /**
+     */
+    public function test_flattenMergeBuckets_sameKey_exception()
+    {
+        $result_of_array_column = [
+            MergeBucket::from([
+                'key_1' => 'lala',
+                'key_2' => 'lili',
+            ]),
+            MergeBucket::from([
+                'key_1' => 'lolo',
+                'key_2' => 'lulu',
+            ]),
+        ];
+
+        try {
+            Arrays::flattenMergeBuckets($result_of_array_column);
+            $this->assertTrue(false, "an exception should have been thrown here");
+        }
+        catch (LogicException $e) {
+            $this->assertEquals(
+                $e->getMessage(),
+                "Conflict during flatten merge for key key_1 between: 
+Existing: 'lala'
+ and 
+Conflict: 'lolo'"
+            );
+        }
     }
 
     /**/
