@@ -395,5 +395,58 @@ class Arrays
         return implode($groups_separator, $out);
     }
 
+    /**
+     * Search the value associated to the location_parts parameter into the input.
+     *
+     * @param  array|ArrayAccess $input          Typically $_POST|$_GET...
+     * @param  scalar|scalar[]   $location_parts
+     *
+     * @return mixed The value if it exists, null or $default_value otherwize.
+     * 
+     * Example:
+     * $array = [
+     *      'entry_1' => [
+     *          'subentry_1' => 'lolo',
+     *          'subentry_2' => 'lala',
+     *      ],
+     *      'entry_2' => [
+     *          0 => 'lili',
+     *          1 => 'lulu',
+     *      ],
+     *      'entry_3' => 'plop',
+     * ];
+     * 
+     * Arrays::getValueAt($array, ['entry_2', 1]);                    => 'lulu'
+     * Arrays::getValueAt($array, ['entry_1', 'subentry_2']);         => null
+     * Arrays::getValueAt($array, ['entry_1', 'subentry_2'], 'lele'); => 'lele'
+     * Arrays::getValueAt($array, 'entry_3');                         => 'plop'
+     */
+    public static function getValueAt($input, $location_parts, $default_value = null)
+    {
+        if (is_scalar($location_parts)) {
+            $location_parts = [$location_parts];
+        }
+
+        if (! is_array($location_parts)) {
+            throw new \InvalidArgumentException(
+                "\$location_parts must be a scalar or an array of scalars (as entries of array/ArrayAccess)"
+                ." instead of ".var_export($location_parts, true)
+            );
+        }
+
+        // The value can be inside a multidimension array
+        $value = $input;
+        foreach ($location_parts as $location_part) {
+            if (isset($value[$location_part])) {
+                $value = $value[$location_part];
+            }
+            else {
+                return $default_value;
+            }
+        }
+
+        return $value;
+    }
+
     /**/
 }

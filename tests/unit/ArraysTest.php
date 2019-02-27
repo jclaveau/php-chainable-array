@@ -279,6 +279,31 @@ class ArraysTest extends \PHPUnit_Framework_TestCase
         );
     }
 
+    /**
+     */
+    public function test_getValueAt()
+    {
+        $array = [
+            'entry_1' => [
+                'subentry_1' => 'lolo',
+                'subentry_2' => 'lala',
+            ],
+            'entry_2' => [
+                0 => 'lili',
+                1 => 'lulu',
+            ],
+            'entry_3' => 'plop',
+        ];
+        
+        // existing
+        $this->assertEquals('lulu', Arrays::getValueAt($array, ['entry_2', 1]));
+        $this->assertEquals('lala', Arrays::getValueAt($array, ['entry_1', 'subentry_2']));
+        $this->assertEquals('plop', Arrays::getValueAt($array, 'entry_3'));
+        // missing
+        $this->assertEquals(null,   Arrays::getValueAt($array, ['entry_1', 'subentry_3']));
+        $this->assertEquals('lele', Arrays::getValueAt($array, ['entry_1', 'subentry_3'], 'lele'));
+    }
+
     /**/
 }
 
